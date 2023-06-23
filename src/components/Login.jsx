@@ -14,6 +14,9 @@ export default function Login() {
 
     const userData = { email: email, password: password };
 
+    if (!email || !password) {
+      alert("Please provide all required fields");
+    }
     try {
       const { data } = await axios.post("/login", userData);
       console.log(data);

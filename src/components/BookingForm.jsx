@@ -29,9 +29,11 @@ export default function BookingForm({ place }) {
   }
 
   async function bookThisPlace() {
-    // if (!checkIn || checkOut || !name || !mobile) {
-    //   alert("Please provide all fields");
-    // }
+    if (!user) {
+      alert("Please log in first");
+    } else if (!checkIn || checkOut || !name || !mobile) {
+      alert("Please provide all required fields");
+    }
 
     const bookingData = {
       checkIn,
