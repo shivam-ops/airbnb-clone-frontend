@@ -35,7 +35,7 @@ export default function Booking() {
               <div className="w-48">
                 <PlaceImg place={booking.place} />
               </div>
-              <div className="py-3 grow pr-3 mt-2 py-2">
+              <div className="py-3 pr-3 grow">
                 <h2 className="text-xl">{booking.place.title}</h2>
                 {/* <div className="flex gap-2 border-t border-gray-300 mb-2"></div> */}
                 <div className="text-xl">

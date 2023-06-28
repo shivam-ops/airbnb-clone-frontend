@@ -16,6 +16,13 @@ export default function Register() {
       password: password,
     };
 
+    //Validate password
+    const passwordErros = validatePassword(password);
+    if (passwordErros.length > 0) {
+      alert("Password validation failed:\n" + passwordErros.join("\n"));
+      return;
+    }
+
     try {
       await axios.post("/register", userData);
       alert("Registration successfull. Now you can log in");
@@ -26,6 +33,34 @@ export default function Register() {
     } catch (error) {
       alert("Registeration failed. Please try again later");
     }
+  }
+
+  function validatePassword(password) {
+    const errors = [];
+
+    if (password.length < 8) {
+      errors.push("Password must be at least 8 characters long.");
+    }
+
+    if (!/[a-zA-Z]/.test(password)) {
+      errors.push("Password must contain at least one alphabet character.");
+    }
+
+    if (!/[0-9]/.test(password)) {
+      errors.push("Password must contain at least one number");
+    }
+
+    if (!/[!@#$%^&*]/.test(password)) {
+      errors.push(
+        "Password must contain at least one special characters (!@#$%^&*)."
+      );
+    }
+
+    if (!/[A-Z]/.test(password)) {
+      errors.push("Password must contain at least one capital letter.");
+    }
+
+    return errors;
   }
 
   return (

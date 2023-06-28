@@ -6,7 +6,6 @@ import Layout from "./Layout";
 import Register from "./components/Register";
 import axios from "axios";
 import { UserContextProvider } from "./UserContext";
-import Account from "./components/Profile";
 import Profile from "./components/Profile";
 import Places from "./components/Places";
 import { PlaceForm } from "./components/PlaceForm";

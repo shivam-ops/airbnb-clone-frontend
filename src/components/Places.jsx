@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
-import Amenities from "./Amenities";
-import PhotosUploader from "./PhotosUploader";
-import { PlaceForm } from "./PlaceForm";
+import { Link } from "react-router-dom";
 import Nav from "./Nav";
 import axios from "axios";
 import PlaceImg from "./PlaceImg";
@@ -48,9 +45,9 @@ export default function Places() {
             <Link
               to={"/account/places/" + place._id}
               key={place.title}
-              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl"
+              className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl mb-1"
             >
-              <div className="flex w-32 h-32 bg-gray-300 grow shrink-0">
+              <div className="flex w-32 h-32 bg-gray-300 grow-0 shrink-0">
                 <PlaceImg place={place} />
               </div>
               <div className="grow-0 shrink">

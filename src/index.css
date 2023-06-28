@@ -8,6 +8,8 @@ input[type="email"],
 input[type="text"],
 input[type="number"],
 input[type="tel"],
+input[type="time"],
+select[type="text"],
 textarea {
   @apply w-full border my-1 py-2 px-3 rounded-2xl;
 }
