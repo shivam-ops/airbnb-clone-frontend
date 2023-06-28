@@ -16,10 +16,22 @@ export default function Register() {
       password: password,
     };
 
-    //Validate password
-    const passwordErros = validatePassword(password);
-    if (passwordErros.length > 0) {
-      alert("Password validation failed:\n" + passwordErros.join("\n"));
+    if (!name || !email || !password) {
+      alert("Please provide all required fields");
+      return;
+    }
+
+    //validate name
+    const nameErrors = validateName(name);
+    if (nameErrors.length > 0) {
+      alert("Name validation failed:\n" + nameErrors.join("\n"));
+      return;
+    }
+
+    //validate password
+    const passwordErrors = validatePassword(password);
+    if (passwordErrors.length > 0) {
+      alert("Password validation failed:\n" + passwordErrors.join("\n"));
       return;
     }
 
@@ -60,6 +72,20 @@ export default function Register() {
       errors.push("Password must contain at least one capital letter.");
     }
 
+    return errors;
+  }
+
+  function validateName(name) {
+    const regex = /^[A-za-z]+$/;
+    const errors = [];
+
+    if (name.length < 3 || name.length > 20) {
+      errors.push("Name must be between 3 and 20 characters.");
+    }
+
+    if (!regex.test(name)) {
+      errors.push("Only half-width alphabets are allowed");
+    }
     return errors;
   }
 
