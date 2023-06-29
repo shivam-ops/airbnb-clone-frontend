@@ -2,12 +2,18 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
+import ErrorFlash from "./ErrorFlash";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [redirect, setRedirect] = useState(false);
   const { setUser } = useContext(UserContext);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleCloseError = () => {
+    setErrorMessage("");
+  };
 
   async function userLogin(e) {
     e.preventDefault();
@@ -15,7 +21,8 @@ export default function Login() {
     const userData = { email: email, password: password };
 
     if (!email || !password) {
-      alert("Please provide all required fields");
+      setErrorMessage("Please provide all required fields");
+      return;
     }
     try {
       const { data } = await axios.post("/login", userData);
@@ -25,9 +32,9 @@ export default function Login() {
       // setEmail("");
       // setPassword("");
       setUser(data);
-      alert("Login successful");
+      setErrorMessage("Login successful");
     } catch (error) {
-      alert("Login failed");
+      setErrorMessage(error.response.data.detail);
     }
   }
 
@@ -61,6 +68,9 @@ export default function Login() {
           </div>
         </form>
       </div>
+      {errorMessage && (
+        <ErrorFlash message={errorMessage} onClose={handleCloseError} />
+      )}
     </div>
   );
 }

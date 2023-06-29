@@ -4,6 +4,7 @@ import axios from "axios";
 import Nav from "./Nav";
 import PhotosUploader from "./PhotosUploader";
 import { Navigate, useParams } from "react-router-dom";
+import ErrorFlash from "./ErrorFlash";
 
 export function PlaceForm() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export function PlaceForm() {
   const [maxGuests, setMaxGuests] = useState(1);
   const [redirect, setRedirect] = useState(false);
   const [price, setPrice] = useState(100);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (!id) {
@@ -40,8 +42,13 @@ export function PlaceForm() {
     });
   }, [id]);
 
+  const handleCloseError = () => {
+    setErrorMessage("");
+  };
+
   async function savePlace(e) {
     e.preventDefault();
+
     const placeData = {
       id,
       title,
@@ -56,21 +63,57 @@ export function PlaceForm() {
       price,
     };
 
+    // if (!placeData) {
+    //   //alert("Please provide all required fields");
+    //   setErrorMessage("Please provide all required fields");
+
+    //   return;
+    // }
+
+    const priceErrors = validatePrice(Number(placeData.price));
+    if (priceErrors.length > 0) {
+      setErrorMessage("Price validation failed:\n" + priceErrors.join("\n"));
+      return;
+    }
+
     if (id) {
       //update
-      const { data } = await axios.put("/places", { id, ...placeData });
-      console.log(data);
-      setRedirect(true);
+      try {
+        const response = await axios.put("/places", { id, ...placeData });
+        console.log(response.data);
+        setRedirect(true);
+      } catch (error) {
+        console.error(error.response.data);
+        setErrorMessage(error.response.data.detail);
+      }
     } else {
       //new place
-      const { data } = await axios.post("/places", { ...placeData });
-      console.log(data);
-      setRedirect(true);
+      try {
+        const response = await axios.post("/places", { ...placeData });
+        console.log(response.data);
+        setRedirect(true);
+      } catch (error) {
+        console.error(error.response.data);
+        setErrorMessage(error.response.data.detail);
+      }
     }
   }
 
   if (redirect) {
     return <Navigate to={"/account/places"} />;
+  }
+
+  function validatePrice(price) {
+    const errors = [];
+
+    if (!Number.isInteger(price)) {
+      errors.push("Price should be an integer");
+    }
+    if (price <= 0) {
+      errors.push("Price should be greater than 0");
+    }
+
+    return errors;
   }
 
   return (
@@ -120,29 +163,44 @@ export function PlaceForm() {
           <div className="grid gap-2 sm:grid-cols-4 md:grid-cols-4">
             <div>
               <h3 className="mt-2 -mb-1">Check in time</h3>
-              <input
+              <select
                 type="text"
-                placeholder="14:00"
+                //placeholder="14:00"
                 value={checkIn}
                 onChange={(e) => setCheckIn(e.target.value)}
-              />
+              >
+                <option value="">--</option>
+                <option value="14:00">14:00</option>
+                <option value="15:00">15:00</option>
+                <option value="16:00">16:00</option>
+              </select>
             </div>
             <div>
               <h3 className="mt-2 -mb-1">Check out time</h3>
-              <input
+              <select
                 type="text"
-                placeholder="11:00"
+                //placeholder="11:00"
                 value={checkOut}
                 onChange={(e) => setCheckout(e.target.value)}
-              />
+              >
+                <option value="">--</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <option value="12:00">12:00</option>
+              </select>
             </div>
             <div>
               <h3 className="mt-2 -mb-1">Max number of guests</h3>
-              <input
+              <select
                 type="number"
                 value={maxGuests}
                 onChange={(e) => setMaxGuests(e.target.value)}
-              />
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
             </div>
             <div>
               <h3 className="mt-2 -mb-1">Price per night</h3>
@@ -155,6 +213,9 @@ export function PlaceForm() {
           </div>
           <button className="primary my-4">Save</button>
         </form>
+        {errorMessage && (
+          <ErrorFlash message={errorMessage} onClose={handleCloseError} />
+        )}
       </div>
     </>
   );

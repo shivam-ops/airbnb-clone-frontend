@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import ErrorFlash from "./ErrorFlash";
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleCloseError = () => {
+    setErrorMessage("");
+  };
 
   async function registerUser(e) {
     e.preventDefault();
@@ -17,33 +23,36 @@ export default function Register() {
     };
 
     if (!name || !email || !password) {
-      alert("Please provide all required fields");
+      //alert("Please provide all required fields");
+      setErrorMessage("Please provide all required fields");
       return;
     }
 
     //validate name
     const nameErrors = validateName(name);
     if (nameErrors.length > 0) {
-      alert("Name validation failed:\n" + nameErrors.join("\n"));
+      setErrorMessage("Name validation failed:\n" + nameErrors.join("\n"));
       return;
     }
 
     //validate password
     const passwordErrors = validatePassword(password);
     if (passwordErrors.length > 0) {
-      alert("Password validation failed:\n" + passwordErrors.join("\n"));
+      setErrorMessage(
+        "Password validation failed:\n" + passwordErrors.join("\n")
+      );
       return;
     }
 
     try {
       await axios.post("/register", userData);
-      alert("Registration successfull. Now you can log in");
+      setErrorMessage("Registration successfull. Now you can log in");
       // Reset input fields
       setName("");
       setEmail("");
       setPassword("");
     } catch (error) {
-      alert("Registeration failed. Please try again later");
+      setErrorMessage("Registeration failed. Please try again later");
     }
   }
 
@@ -51,32 +60,30 @@ export default function Register() {
     const errors = [];
 
     if (password.length < 8) {
-      errors.push("Password must be at least 8 characters long.");
+      errors.push("Must be at least 8 characters long.");
     }
 
     if (!/[a-zA-Z]/.test(password)) {
-      errors.push("Password must contain at least one alphabet character.");
+      errors.push("Must contain at least one alphabet character.");
     }
 
     if (!/[0-9]/.test(password)) {
-      errors.push("Password must contain at least one number");
+      errors.push("Must contain at least one number");
     }
 
     if (!/[!@#$%^&*]/.test(password)) {
-      errors.push(
-        "Password must contain at least one special characters (!@#$%^&*)."
-      );
+      errors.push("Must contain at least 1 special char (!@#$%^&*).");
     }
 
     if (!/[A-Z]/.test(password)) {
-      errors.push("Password must contain at least one capital letter.");
+      errors.push("Must contain at least one capital letter.");
     }
 
     return errors;
   }
 
   function validateName(name) {
-    const regex = /^[A-za-z]+$/;
+    const regex = /^[A-Za-z ]+$/;
     const errors = [];
 
     if (name.length < 3 || name.length > 20) {
@@ -121,6 +128,9 @@ export default function Register() {
           </div>
         </form>
       </div>
+      {errorMessage && (
+        <ErrorFlash message={errorMessage} onClose={handleCloseError} />
+      )}
     </div>
   );
 }
