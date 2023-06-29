@@ -1,7 +1,5 @@
 # Project_AirbnbClone_Web
 
-This is a starter template for a project using Vite and React. It provides a quick and efficient setup for developing modern web applications.
-
 ## Features
 
 - **Vite**: Fast and optimized development setup
