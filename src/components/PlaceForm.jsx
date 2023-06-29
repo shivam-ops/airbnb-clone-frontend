@@ -99,6 +99,18 @@ export function PlaceForm() {
     }
   }
 
+  async function deletePlace(e) {
+    e.preventDefault();
+
+    try {
+      const response = await axios.delete(`/places/${id}`);
+      console.log(response.data);
+      setRedirect(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   if (redirect) {
     return <Navigate to={"/account/places"} />;
   }
@@ -212,6 +224,9 @@ export function PlaceForm() {
             </div>
           </div>
           <button className="primary my-4">Save</button>
+          <button onClick={deletePlace} className="secondary text-black my-4">
+            Delete listing
+          </button>
         </form>
         {errorMessage && (
           <ErrorFlash message={errorMessage} onClose={handleCloseError} />

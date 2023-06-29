@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import AddressLink from "./AddressLink";
 import PlaceGallery from "./PlaceGallery";
 import BookingDates from "./BookingDates";
@@ -8,6 +8,7 @@ import BookingDates from "./BookingDates";
 export default function BookingPage() {
   const { id } = useParams();
   const [booking, setBooking] = useState(null);
+  const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -29,6 +30,21 @@ export default function BookingPage() {
     return "Loading...";
   }
 
+  async function cancelBooking(e) {
+    e.preventDefault();
+    try {
+      const response = await axios.delete(`/bookings/${id}`);
+      console.log(response.data);
+      setRedirect(true);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  if (redirect) {
+    return <Navigate to={"/account/bookings"} />;
+  }
+
   return (
     <div className="my-8">
       <h1 className="text-3xl">{booking.place.title}</h1>
@@ -38,9 +54,17 @@ export default function BookingPage() {
           <h2 className="text-2xl mb-4">Your booking information:</h2>
           <BookingDates booking={booking} />
         </div>
-        <div className="bg-primary p-6 text-white rounded-2xl">
-          <div>Total Price</div>
-          <div className="text-3xl">${booking.price}</div>
+        <div className="flex items-center gap-4">
+          <div className="bg-primary p-6 text-white rounded-2xl">
+            <div>Total Price</div>
+            <div className="text-3xl">${booking.price}</div>
+          </div>
+          <button
+            onClick={cancelBooking}
+            className="bg-primary p-6 text-white text-2xl rounded-2xl py-9"
+          >
+            Cancel Booking
+          </button>
         </div>
       </div>
       <PlaceGallery place={booking.place} />

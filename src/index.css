@@ -27,3 +27,8 @@ button.primary {
   /* background-color: "#F5385D"; */
   @apply bg-primary p-2 w-full text-white rounded-2xl;
 }
+
+button.secondary {
+  /* background-color: "#F5385D"; */
+  @apply bg-gray-300 p-2 w-full text-black rounded-2xl;
+}

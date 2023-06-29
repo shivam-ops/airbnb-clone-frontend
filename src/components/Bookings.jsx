@@ -25,7 +25,7 @@ export default function Booking() {
     <div>
       <Nav />
       <div>
-        {bookings?.length > 0 &&
+        {bookings?.length > 0 ? (
           bookings.map((booking) => (
             <Link
               to={`/account/bookings/${booking._id}`}
@@ -64,7 +64,12 @@ export default function Booking() {
                 </div>
               </div>
             </Link>
-          ))}
+          ))
+        ) : (
+          <div className="flex items-center justify-center">
+            <p className="text-gray-600 text-xl italic">No bookings...</p>
+          </div>
+        )}
       </div>
     </div>
   );
