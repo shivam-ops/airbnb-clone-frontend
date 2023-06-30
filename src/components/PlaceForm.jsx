@@ -223,10 +223,21 @@ export function PlaceForm() {
               />
             </div>
           </div>
-          <button className="primary my-4">Save</button>
-          <button onClick={deletePlace} className="secondary text-black my-4">
-            Delete listing
-          </button>
+          {!id ? (
+            // Rendered when adding a new place
+            <button className="primary my-4">Save</button>
+          ) : (
+            // Rendered when updating a place
+            <>
+              <button className="primary my-4">Save</button>
+              <button
+                onClick={deletePlace}
+                className="secondary text-black my-4"
+              >
+                Delete listing
+              </button>
+            </>
+          )}
         </form>
         {errorMessage && (
           <ErrorFlash message={errorMessage} onClose={handleCloseError} />
