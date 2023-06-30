@@ -1,6 +1,6 @@
 import axios from "axios";
 import { differenceInCalendarDays, set } from "date-fns";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../UserContext";
 import ErrorFlash from "./ErrorFlash";
@@ -10,10 +10,30 @@ export default function BookingForm({ place }) {
   const [checkOut, setCheckOut] = useState("");
   const [numberOfGuests, setNumberOfGuests] = useState(1);
   const [name, setName] = useState("");
-  const [mobile, setMobile] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [redirect, setRedirect] = useState("");
   const { user } = useContext(UserContext);
   const [errorMessage, setErrorMessage] = useState("");
+  const phoneNumberRef = useRef(null);
+
+  useEffect(() => {
+    phoneNumberRef.current && phoneNumberRef.current.focus();
+  }, []);
+
+  const handlePhoneNumberChange = (event) => {
+    const inputPhoneNumber = event.target.value;
+    const formattedPhoneNumber = formatPhoneNumber(inputPhoneNumber);
+    setPhoneNumber(formattedPhoneNumber);
+  };
+
+  const formatPhoneNumber = (phoneNumber) => {
+    const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
+    const formattedPhoneNumber = cleanedPhoneNumber.replace(
+      /^(\d{3})(\d{4})(\d{4})$/,
+      "$1-$2-$3"
+    );
+    return formattedPhoneNumber;
+  };
 
   const handleCloseError = () => {
     setErrorMessage("");
@@ -38,8 +58,16 @@ export default function BookingForm({ place }) {
     if (!user) {
       setErrorMessage("Please log in first and try again");
       return;
-    } else if (!checkIn || !checkOut || !name || !mobile) {
+    } else if (!checkIn || !checkOut || !name || !phoneNumber) {
       setErrorMessage("Please provide all required fields");
+      return;
+    }
+    const cleanPhoneNumber = phoneNumber.replace(/-/g, "").replace(/\D/g, "");
+
+    if (!validatePhoneNumber(cleanPhoneNumber)) {
+      setErrorMessage(
+        "Invalid phone number. Please enter a valid 10-digit number"
+      );
       return;
     }
 
@@ -48,18 +76,11 @@ export default function BookingForm({ place }) {
       checkOut,
       numberOfGuests,
       name,
-      phoneNumber: mobile,
+      phoneNumber: cleanPhoneNumber,
       place: place._id,
       user: user._id,
       price: numberOfNights * place.price,
     };
-
-    if (!validatePhoneNumber(mobile)) {
-      setErrorMessage(
-        "Invalid phone number. Please enter a valid 10-digit number"
-      );
-      return;
-    }
 
     try {
       const response = await axios.post("/bookings/", bookingData);
@@ -84,11 +105,11 @@ export default function BookingForm({ place }) {
   }
 
   function validatePhoneNumber(phoneNumber) {
-    const phonePattern = /^\d{10}$/;
-    const cleanPhoneNumber = mobile.replace(/\D/g, "");
+    const phonePattern = /^\d{11}$/;
+    const cleanPhoneNumber = phoneNumber.replace(/\D/g, "");
 
     if (phonePattern.test(cleanPhoneNumber)) {
-      return true;
+      return cleanPhoneNumber;
     } else {
       return false;
     }
@@ -142,8 +163,9 @@ export default function BookingForm({ place }) {
             <label>Mobile number:</label>
             <input
               type="tel"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              ref={phoneNumberRef}
             />
           </div>
         )}

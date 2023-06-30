@@ -6,7 +6,7 @@ import ErrorFlash from "./ErrorFlash";
 export default function IndexPage() {
   const [places, setPlaces] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [errorMessage, setErrorMessage] = useState("");
+  // const [errorMessage, setErrorMessage] = useState("");
   const limit = 8;
 
   useEffect(() => {
@@ -28,13 +28,11 @@ export default function IndexPage() {
       const newPlaces = response.data;
 
       if (newPlaces.length === 0 && page > 1) {
-        //alert("No more places to load");
         setErrorMessage("No more places to load...");
-        return;
+      } else {
+        setCurrentPage(page);
+        setPlaces(newPlaces);
       }
-
-      setCurrentPage(page);
-      setPlaces(newPlaces);
     } catch (error) {
       console.log(error);
     }
@@ -76,16 +74,18 @@ export default function IndexPage() {
             Previous
           </button>
         )}
-        <button
-          className="px-4 py-2 border bg-primary text-white border-white rounded-lg"
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          Next
-        </button>
+        {places.length === limit && (
+          <button
+            className="px-4 py-2 border bg-primary text-white border-white rounded-lg"
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            Next
+          </button>
+        )}
       </div>
-      {errorMessage && (
+      {/* {errorMessage && (
         <ErrorFlash message={errorMessage} onClose={handleCloseError} />
-      )}
+      )} */}
     </>
   );
 }

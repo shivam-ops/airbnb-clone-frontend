@@ -35,6 +35,13 @@ export default function Register() {
       return;
     }
 
+    //validate email
+    const emailErros = validateEmail(email);
+    if (emailErros.length > 0) {
+      setErrorMessage("Email validation failed:\n" + emailErros.join("\n"));
+      return;
+    }
+
     //validate password
     const passwordErrors = validatePassword(password);
     if (passwordErrors.length > 0) {
@@ -82,17 +89,48 @@ export default function Register() {
     return errors;
   }
 
-  function validateName(name) {
-    const regex = /^[A-Za-z ]+$/;
+  function validateEmail(email) {
+    const regex = /^[a-z0-9]+@[a-z0-9]+\.[a-z0-9]+$/;
     const errors = [];
 
-    if (name.length < 3 || name.length > 20) {
-      errors.push("Name must be between 3 and 20 characters.");
+    if (email.length > 325) {
+      errors.push("Email address must be less than 326 characters.");
     }
 
-    if (!regex.test(name)) {
-      errors.push("Only half-width alphabets are allowed");
+    if (!regex.test(email)) {
+      errors.push("Invalid email address format.");
     }
+
+    return errors;
+  }
+
+  function validateName(name) {
+    const regexKanji = /^[\p{Script_Extensions=Han}]{1,10}$/u;
+    const regexKatakana = /^[\p{Script_Extensions=Katakana}ー]{2,20}$/u;
+    const regexHiragana = /^[\p{Script_Extensions=Hiragana}ー]{2,20}$/u;
+    const regexEnglish = /^[A-Za-z\s]{3,20}$/;
+    const errors = [];
+
+    if (regexEnglish.test(name)) {
+      if (name.length < 3) {
+        errors.push("Name must contain at least 3 English letters.");
+      }
+    } else if (regexKanji.test(name)) {
+      if (name.length < 1 || name.length > 10) {
+        errors.push("Name must be between 1 and 10 Kanji characters.");
+      }
+    } else if (regexHiragana.test(name)) {
+      if (name.length < 2 || name.length > 20) {
+        errors.push("Name must be between 2 and 20 Hiragana characters.");
+      }
+    } else if (regexKatakana.test(name)) {
+      if (name.length < 2 || name.length > 20) {
+        errors.push("Name must be between 2 and 20 Katakana characters.");
+      }
+    } else {
+      errors.push("Name is invalid.");
+    }
+
     return errors;
   }
 
